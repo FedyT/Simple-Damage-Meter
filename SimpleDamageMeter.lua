@@ -158,4 +158,4 @@ SlashCmdList["SIMPLEDMG"] = function(msg)
     else
         UpdateDamageUI()
     end
-end
+end 

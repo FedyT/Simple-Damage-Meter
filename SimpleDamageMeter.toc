@@ -5,7 +5,6 @@
 ## Author: YourName
 ## SavedVariables: SimpleDamageMeterData
 ## Dependencies: Ace3
-## OptionalDeps: 
 
 SimpleDamageMeter.xml
 SimpleDamageMeter.lua
