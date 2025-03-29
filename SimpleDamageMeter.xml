@@ -21,11 +21,11 @@
         </Frames>
     </Frame>
 
-    <!-- Toggle button that will show and hide the damage meter -->
+    <!-- Button that will toggle the damage meter -->
     <Button name="SimpleDamageMeterToggleButton" parent="UIParent" inherits="UIPanelButtonTemplate">
-        <Size x="150" y="30"/>
+        <Size x="30" y="30"/>
         <Anchors>
-            <Anchor point="BOTTOMRIGHT" x="-20" y="100"/>
+            <Anchor point="TOPRIGHT" x="-10" y="-10"/>
         </Anchors>
         <Text>
             <FontString name="SimpleDamageMeterToggleText" text="Toggle Damage Meter"/>

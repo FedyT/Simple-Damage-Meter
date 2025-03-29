@@ -1,5 +1,6 @@
 -- SimpleDamageMeter.lua
 
+-- Create the frame for the damage meter
 local frame = CreateFrame("Frame", "SimpleDamageMeterFrame", UIParent, "BackdropTemplate")
 frame:SetSize(250, 200)
 frame:SetPoint("CENTER")
@@ -10,13 +11,7 @@ frame:SetBackdrop({
     insets = { left = 4, right = 4, top = 4, bottom = 4 }
 })
 frame:SetBackdropColor(0, 0, 0, 1)
-
--- Dragging Logic
-frame:SetMovable(true)
-frame:EnableMouse(true)
-frame:RegisterForDrag("LeftButton")
-frame:SetScript("OnDragStart", function(self) self:StartMoving() end)
-frame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+frame:EnableMouse(true)  -- Make frame clickable to drag
 
 -- Damage Storage
 local damageData = {}
@@ -78,32 +73,6 @@ local function UpdateDamageUI()
     end
 end
 
--- Check if player is in the group
-local function IsPlayerInGroup(playerName)
-    local isInGroup = false
-    if IsInGroup() then
-        -- Check party members
-        for i = 1, GetNumGroupMembers() do
-            local name = GetUnitName("party" .. i, true)
-            if name == playerName then
-                isInGroup = true
-                break
-            end
-        end
-    end
-    if IsInRaid() then
-        -- Check raid members
-        for i = 1, GetNumGroupMembers() do
-            local name = GetUnitName("raid" .. i, true)
-            if name == playerName then
-                isInGroup = true
-                break
-            end
-        end
-    end
-    return isInGroup
-end
-
 -- Event Handling
 frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 frame:RegisterEvent("PLAYER_REGEN_DISABLED")
@@ -127,11 +96,36 @@ frame:SetScript("OnEvent", function(self, event)
     end
 end)
 
--- Toggle Button
-local toggleButton = CreateFrame("Button", "SimpleDamageMeterToggleButton", UIParent, "UIPanelButtonTemplate")
-toggleButton:SetPoint("BOTTOMRIGHT", -20, 100)
-toggleButton:SetSize(150, 30)
-toggleButton:SetText("Toggle Damage Meter")
+-- Create the round button attached to the mini-map (Toggle Button)
+local toggleButton = CreateFrame("Button", "SimpleDamageMeterToggleButton", UIParent, "BackdropTemplate")
+toggleButton:SetSize(30, 30)  -- Set the size of the button
+toggleButton:SetNormalTexture("Interface\\Icons\\INV_Misc_QuestionMark")  -- Set the icon
+
+-- Add a golden border to the button (mimicking mini-map style)
+toggleButton:SetBackdrop({
+    bgFile = "Interface\\Buttons\\White8x8", 
+    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", 
+    edgeSize = 12,
+    insets = { left = 2, right = 2, top = 2, bottom = 2 }
+})
+toggleButton:SetBackdropColor(0, 0, 0, 0.8)
+toggleButton:SetBackdropBorderColor(1, 0.84, 0, 1)  -- Golden color for the border
+
+-- Function to position the icon on the edge of the mini-map
+local function PositionButton()
+    local minimapRadius = Minimap:GetWidth() / 2
+    local angle = math.random() * 2 * math.pi  -- Random angle to start with
+    local xOffset = minimapRadius * math.cos(angle)
+    local yOffset = minimapRadius * math.sin(angle)
+
+    toggleButton:SetPoint("CENTER", Minimap, "CENTER", xOffset, yOffset)
+end
+
+PositionButton()
+
+-- Make the button **non-movable** and **clickable** (to toggle the frame visibility)
+toggleButton:SetMovable(false)
+toggleButton:EnableMouse(true)
 toggleButton:SetScript("OnClick", function()
     if frame:IsShown() then
         frame:Hide()
@@ -139,7 +133,21 @@ toggleButton:SetScript("OnClick", function()
         frame:Show()
     end
 end)
+
 toggleButton:Show()
+
+-- Allow dragging the frame (damage meter)
+frame:SetMovable(true)
+frame:EnableMouse(true)
+frame:SetScript("OnMouseDown", function(self, button)
+    if button == "LeftButton" then
+        self:StartMoving()
+    end
+end)
+
+frame:SetScript("OnMouseUp", function(self)
+    self:StopMovingOrSizing()
+end)
 
 SLASH_SIMPLEDMG1 = "/damage"
 SlashCmdList["SIMPLEDMG"] = function(msg)
