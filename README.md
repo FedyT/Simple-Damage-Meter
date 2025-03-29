@@ -1,19 +1,23 @@
-SimpleDamageMeter Addon
-This is a simple World of Warcraft addon I created to track the damage done by players in the game. It is designed to be lightweight and easy to use. It also formats large damage numbers (K/M) for easier reading.
+**Simple Damage Meter Addon**
 
-Features:
-Tracks overall damage done in the current fight.
+**Overview**
 
-Displays damage in a movable, resizable window on the screen.
+Welcome to the Simple Damage Meter project! This is an ongoing personal learning project as I explore the world of World of Warcraft addon development. The core goal is not to compete with massive, feature-rich addons but to provide a simple, lightweight solution for players, particularly those with low-end PCs, who need minimal resource usage while still tracking key data like damage done in combat.
 
-Formats large numbers into more readable values (e.g., 1,000 becomes 1K, 1,000,000 becomes 1M).
+**What’s the Purpose?**
+The main goal of this addon is to track and display the total damage done by players in a group or raid. It's designed to use minimal resources and provide a simple, clean interface. The functionality is currently focused on showing the damage data, and I plan to improve it further with more features such as UI customization and advanced damage statistics in future updates.
 
-Shows a list of players in the group and their individual damage (coming soon).
+**Why Lightweight?**
+This addon is created with low-end PC players in mind. It uses minimal resources, so even players running the game on older hardware can benefit from this tool without worrying about performance hits. The idea is to keep things simple, intuitive, and optimized for lower resource consumption.
 
-Version: 1.0.0
-Initial release.
+**Future Plans**
 
-About:
-This project is part of my learning journey in coding World of Warcraft addons for fun and personal growth. I'm exploring how to interact with the WoW API, manage user interface elements, and learn the Lua programming language along the way.
+In future updates, I plan to:
+Learn and implement better UI design: Currently, the focus is on functionality, but I will gradually introduce better UI implementation.
 
-Feel free to fork and contribute if you want to help improve the addon!
+Add more features: Tracking other combat metrics, advanced customization options, and a more detailed damage breakdown are on the horizon.
+
+**Acknowledgements**
+This is my first step in addon development, and I'm excited to continue learning and improving. Your feedback and suggestions are always appreciated!
+
+Stay tuned for future improvements!
