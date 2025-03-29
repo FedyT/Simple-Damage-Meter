@@ -16,7 +16,8 @@
 
         <!-- Font strings for showing damage data (will be updated dynamically) -->
         <Frames>
-            <!-- The individual damage lines will be created dynamically with Lua -->
+            <!-- FontString entries to display text dynamically -->
+            <FontString name="SimpleDamageMeterText" inherits="GameFontNormal" />
         </Frames>
     </Frame>
 

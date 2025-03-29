@@ -32,18 +32,47 @@ local function FormatNumber(num)
     end
 end
 
+-- Function to Get Class Icon
+local function GetClassIcon(playerName)
+    local _, class = UnitClass(playerName)
+    if class then
+        local texture = "Interface\\Icons\\ClassIcon_" .. class
+        return texture
+    end
+    return nil
+end
+
 -- UI Update Function
 local function UpdateDamageUI()
-    for _, text in ipairs(frame.texts or {}) do
-        text:Hide()
+    -- Clear existing texts before updating
+    if frame.texts then
+        for _, text in ipairs(frame.texts) do
+            text:Hide()
+        end
     end
     frame.texts = {}
 
     local yOffset = -10
     for player, damage in pairs(damageData) do
-        local text = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        text:SetPoint("TOPLEFT", 10, yOffset)
-        text:SetText(player .. ": " .. FormatNumber(damage))
+        -- Create a new container frame for each player
+        local playerFrame = CreateFrame("Frame", nil, frame)
+        playerFrame:SetSize(230, 20)  -- Adjust width to fit the icon and name within the frame
+        playerFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 10, yOffset)  -- Position it within the main frame
+
+        -- Create the class icon inside the playerFrame
+        local icon = GetClassIcon(player)
+        if icon then
+            local classIcon = playerFrame:CreateTexture(nil, "ARTWORK")
+            classIcon:SetTexture(icon)
+            classIcon:SetSize(16, 16)  -- Set the size of the icon
+            classIcon:SetPoint("LEFT", playerFrame, "LEFT", 0, 0)  -- Position it to the left of the name
+        end
+
+        -- Create the player's name and damage text
+        local text = playerFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        text:SetPoint("LEFT", playerFrame, "LEFT", 20, 0)  -- Position the text to the right of the icon
+        text:SetText(FormatNumber(damage) .. " " .. player)
+
         table.insert(frame.texts, text)
         yOffset = yOffset - 20
     end
@@ -93,10 +122,8 @@ frame:SetScript("OnEvent", function(self, event)
         damageData = {}  -- Reset on fight start
         UpdateDamageUI()
     elseif event == "PLAYER_REGEN_ENABLED" then
-        print("Fight Over! Damage Done:")
-        for player, damage in pairs(damageData) do
-            print(player .. ": " .. FormatNumber(damage))
-        end
+        -- No chat print now, just update UI
+        UpdateDamageUI()
     end
 end)
 
@@ -121,9 +148,6 @@ SlashCmdList["SIMPLEDMG"] = function(msg)
         UpdateDamageUI()
         print("Damage reset!")
     else
-        print("Current Damage Done:")
-        for player, damage in pairs(damageData) do
-            print(player .. ": " .. FormatNumber(damage))
-        end
+        UpdateDamageUI()
     end
 end
