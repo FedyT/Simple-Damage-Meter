@@ -27,6 +27,16 @@ This addon is built with **low-end PC players** in mind. It uses **minimal syste
 - Improved **UI updates** to reflect damage statistics during combat.
 - **Fixed the positioning** of the icon to remain around the mini-map.
 
-### **Version 1.003 - Upcoming Changes** 🚀
-- Plan to **fix the icon design** to improve visual appeal (currently shows a generic **Question Mark** 💬).
-- Add functionality to **drag the icon around the mini-map**, preventing it from overlapping with other icons or addons.
+**Patch Notes (V1.003)**
+🗺️ Minimap Icon: Added for quick access to toggle the damage meter UI.
+⚔️ Spec Icons: Replaced class icons with spec-specific icons for better role representation.
+🎨 Dynamic Class-Colored Bars: Player bars now adjust based on group size with class colors.
+🔄 Resizing UI: The UI adapts dynamically as players join or leave, maintaining a clean layout.
+
+Bug Fixes & Enhancements:
+🛠️ Improved frame resizing when players join/leave.
+🎨 Corrected class color definitions for accuracy.
+
+**Quality of Life:**
+🧹 Simplified UI with class-colored bars replacing the fixed background.
+🚫 Removed XML file for a cleaner Lua-based addon.
