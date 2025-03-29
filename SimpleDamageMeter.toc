@@ -1,0 +1,6 @@
+## Interface: 11000
+## Title: Simple Damage Meter
+## Author: Fedy
+## Version: 1.0
+## Notes: Tracks your total damage done and displays individual group/raid damage.
+SimpleDamageMeter.lua

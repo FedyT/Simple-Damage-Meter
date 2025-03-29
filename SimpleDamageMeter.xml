@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Ui xmlns="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ http://wow.ui.blizzard.com/manifest/UiSchema.xsd">
+
+    <!-- Frame definition for the damage meter UI -->
+    <Frame name="SimpleDamageMeterFrame" parent="UIParent" movable="true" resizable="false" clampedToScreen="true" hidden="true">
+        <Size x="250" y="200"/>
+        <Anchors>
+            <Anchor point="CENTER"/>
+        </Anchors>
+        <Backdrop bgFile="Interface\\DialogFrame\\UI-DialogBox-Background" edgeFile="Interface\\Tooltips\\UI-Tooltip-Border" tile="true" tileSize="16" edgeSize="16">
+            <Insets left="4" right="4" top="4" bottom="4"/>
+        </Backdrop>
+        <BackdropColor r="0" g="0" b="0" a="1"/>
+
+        <!-- Font strings for showing damage data (will be updated dynamically) -->
+        <Frames>
+            <!-- The individual damage lines will be created dynamically with Lua -->
+        </Frames>
+    </Frame>
+
+    <!-- Toggle button that will show and hide the damage meter -->
+    <Button name="SimpleDamageMeterToggleButton" parent="UIParent" inherits="UIPanelButtonTemplate">
+        <Size x="150" y="30"/>
+        <Anchors>
+            <Anchor point="BOTTOMRIGHT" x="-20" y="100"/>
+        </Anchors>
+        <Text>
+            <FontString name="SimpleDamageMeterToggleText" text="Toggle Damage Meter"/>
+        </Text>
+        <Scripts>
+            <OnClick>
+                SimpleDamageMeterToggleButton_OnClick()
+            </OnClick>
+        </Scripts>
+    </Button>
+</Ui>
