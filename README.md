@@ -1,23 +1,32 @@
-**Simple Damage Meter Addon**
+# **Simple Damage Meter Addon** 📊💥
 
-**Overview**
+## **Overview** 🧐
 
-Welcome to the Simple Damage Meter project! This is an ongoing personal learning project as I explore the world of World of Warcraft addon development. The core goal is not to compete with massive, feature-rich addons but to provide a simple, lightweight solution for players, particularly those with low-end PCs, who need minimal resource usage while still tracking key data like damage done in combat.
+Welcome to the **Simple Damage Meter** project! This ongoing personal learning project explores the exciting world of World of Warcraft addon development. The primary goal is not to compete with massive, feature-rich addons, but rather to provide a simple and lightweight solution for players—especially those with low-end PCs—who need minimal resource usage while still being able to track important data, like damage done in combat. 
 
-**What’s the Purpose?**
-The main goal of this addon is to track and display the total damage done by players in a group or raid. It's designed to use minimal resources and provide a simple, clean interface. The functionality is currently focused on showing the damage data, and I plan to improve it further with more features such as UI customization and advanced damage statistics in future updates.
+## **Purpose** 🎯
 
-**Why Lightweight?**
-This addon is created with low-end PC players in mind. It uses minimal resources, so even players running the game on older hardware can benefit from this tool without worrying about performance hits. The idea is to keep things simple, intuitive, and optimized for lower resource consumption.
+The main goal of this addon is to **track and display the total damage** done by players in a group or raid. It’s designed to use minimal resources and offer a **clean, intuitive interface**. Right now, the functionality is focused on showing **damage data**, but future updates will include more advanced features, such as **UI customization** and detailed **damage statistics**.
 
-**Future Plans**
+## **Why Lightweight?** ⚙️
 
-In future updates, I plan to:
-Learn and implement better UI design: Currently, the focus is on functionality, but I will gradually introduce better UI implementation.
+This addon is built with **low-end PC players** in mind. It uses **minimal system resources**, so even players with older hardware can benefit from this tool without worrying about performance issues. The focus is on simplicity, intuitiveness, and **optimized resource consumption**.
 
-Add more features: Tracking other combat metrics, advanced customization options, and a more detailed damage breakdown are on the horizon.
+---
 
-**Acknowledgements**
-This is my first step in addon development, and I'm excited to continue learning and improving. Your feedback and suggestions are always appreciated!
+## **📜 Changelog** 
 
-Stay tuned for future improvements!
+### **Version 1.000 - Damage Calculation for You and Your Team** 💥
+- Introduced basic **damage calculation** for the player and their team.
+- Tracks **damage done** by players in a group or raid, with individual breakdowns.
+- Displays damage in a **clean, easy-to-read format** with player names and class icons.
+
+### **Version 1.002 - Updated UI and Functionality** 🎉
+- Implemented a **movable and draggable frame** for the damage meter display.
+- Added a **clickable icon** to toggle the visibility of the damage meter frame.
+- Improved **UI updates** to reflect damage statistics during combat.
+- **Fixed the positioning** of the icon to remain around the mini-map.
+
+### **Version 1.003 - Upcoming Changes** 🚀
+- Plan to **fix the icon design** to improve visual appeal (currently shows a generic **Question Mark** 💬).
+- Add functionality to **drag the icon around the mini-map**, preventing it from overlapping with other icons or addons.
