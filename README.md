@@ -2,15 +2,15 @@
 
 ## **Overview** 🧐
 
-Welcome to the **Simple Damage Meter** project! This ongoing personal learning project explores the exciting world of World of Warcraft addon development. The primary goal is not to compete with massive, feature-rich addons, but rather to provide a simple and lightweight solution for players—especially those with low-end PCs—who need minimal resource usage while still being able to track important data, like damage done in combat. 
+Welcome to the **Simple Damage Meter** project! This ongoing personal learning project explores the exciting world of **World of Warcraft** addon development. The primary goal is not to compete with massive, feature-rich addons, but rather to provide a **simple** and **lightweight solution** for players—especially those with low-end PCs—who need minimal resource usage while still being able to track important data, like damage done in combat. 
 
 ## **Purpose** 🎯
 
-The main goal of this addon is to **track and display the total damage** done by players in a group or raid. It’s designed to use minimal resources and offer a **clean, intuitive interface**. Right now, the functionality is focused on showing **damage data**, but future updates will include more advanced features, such as **UI customization** and detailed **damage statistics**.
+The main goal of this addon is to **track and display the total damage** done by players in a group or raid. It’s designed to use **minimal resources** and offer a **clean, intuitive interface**. Right now, the functionality is focused on showing **damage data**, but future updates will include more advanced features, such as **UI customization** and detailed **damage statistics**.
 
 ## **Why Lightweight?** ⚙️
 
-This addon is built with **low-end PC players** in mind. It uses **minimal system resources**, so even players with older hardware can benefit from this tool without worrying about performance issues. The focus is on simplicity, intuitiveness, and **optimized resource consumption**.
+This addon is built with **low-end PC players** in mind. It uses **minimal system resources**, so even players with older hardware can benefit from this tool without worrying about performance issues. The focus is on **simplicity**, **intuitiveness**, and **optimized resource consumption**.
 
 ---
 
@@ -27,16 +27,16 @@ This addon is built with **low-end PC players** in mind. It uses **minimal syste
 - Improved **UI updates** to reflect damage statistics during combat.
 - **Fixed the positioning** of the icon to remain around the mini-map.
 
-**Patch Notes (V1.003)**
-🗺️ Minimap Icon: Added for quick access to toggle the damage meter UI.
-⚔️ Spec Icons: Replaced class icons with spec-specific icons for better role representation.
-🎨 Dynamic Class-Colored Bars: Player bars now adjust based on group size with class colors.
-🔄 Resizing UI: The UI adapts dynamically as players join or leave, maintaining a clean layout.
+### **Patch Notes (V1.003) ✨**
+- **🗺️ Minimap Icon**: Added for quick access to toggle the damage meter UI.
+- **⚔️ Spec Icons**: Replaced class icons with spec-specific icons for better role representation.
+- **🎨 Dynamic Class-Colored Bars**: Player bars now adjust based on group size with class colors.
+- **🔄 Resizing UI**: The UI adapts dynamically as players join or leave, maintaining a clean layout.
 
-Bug Fixes & Enhancements:
-🛠️ Improved frame resizing when players join/leave.
-🎨 Corrected class color definitions for accuracy.
+#### **Bug Fixes & Enhancements**:
+- 🛠️ Improved frame resizing when players join/leave.
+- 🎨 Corrected class color definitions for accuracy.
 
-**Quality of Life:**
-🧹 Simplified UI with class-colored bars replacing the fixed background.
-🚫 Removed XML file for a cleaner Lua-based addon.
+#### **Quality of Life**:
+- 🧹 Simplified UI with class-colored bars replacing the fixed background.
+- 🚫 Removed XML file for a cleaner Lua-based addon.
