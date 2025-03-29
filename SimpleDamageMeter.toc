@@ -1,10 +1,6 @@
-## Interface: 11901
-## Title: SimpleDamageMeter
-## Notes: A simple damage meter addon for tracking damage output in combat.
-## Version: 1.002
-## Author: YourName
-## SavedVariables: SimpleDamageMeterData
-## Dependencies: Ace3
-
-SimpleDamageMeter.xml
+## Interface: 11000
+## Title: Simple Damage Meter
+## Author: Fedy
+## Version: 1.0
+## Notes: Tracks your total damage done and displays individual group/raid damage.
 SimpleDamageMeter.lua

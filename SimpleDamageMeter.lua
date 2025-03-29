@@ -1,161 +1,190 @@
--- SimpleDamageMeter.lua
-
--- Create the frame for the damage meter
+local addonName = "SimpleDamageMeter"
 local frame = CreateFrame("Frame", "SimpleDamageMeterFrame", UIParent, "BackdropTemplate")
-frame:SetSize(250, 200)
-frame:SetPoint("CENTER")
-frame:SetBackdrop({
-    bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
-    tile = true, tileSize = 16, edgeSize = 16,
-    insets = { left = 4, right = 4, top = 4, bottom = 4 }
-})
-frame:SetBackdropColor(0, 0, 0, 1)
-frame:EnableMouse(true)  -- Make frame clickable to drag
+frame:SetBackdrop(nil) -- No background frame
+frame:SetMovable(true)
+frame:EnableMouse(true)
+frame:RegisterForDrag("LeftButton")
+frame:SetScript("OnDragStart", frame.StartMoving)
+frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 
--- Damage Storage
+-- Class color definitions (RGB 0-1 format)
+local CLASS_COLORS = {
+    WARRIOR = { r = 0.78, g = 0.61, b = 0.43 },
+    MAGE = { r = 0.41, g = 0.80, b = 0.94 },
+    ROGUE = { r = 1.00, g = 0.96, b = 0.41 },
+    HUNTER = { r = 0.67, g = 0.83, b = 0.45 },
+    PRIEST = { r = 1.00, g = 1.00, b = 1.00 },
+    PALADIN = { r = 0.96, g = 0.55, b = 0.73 },
+    SHAMAN = { r = 0.00, g = 0.44, b = 0.87 },
+    WARLOCK = { r = 0.53, g = 0.53, b = 0.93 },
+    DRUID = { r = 1.00, g = 0.49, b = 0.04 },
+    DEATHKNIGHT = { r = 0.77, g = 0.12, b = 0.23 },
+    MONK = { r = 0.00, g = 1.00, b = 0.59 },
+    DEMONHUNTER = { r = 0.64, g = 0.19, b = 0.79 },
+    EVOKER = { r = 0.20, g = 0.58, b = 0.50 },
+}
+
+-- Data storage
 local damageData = {}
+local playerFrames = {}
 
--- Function to Format Numbers
+-- Format numbers
 local function FormatNumber(num)
-    if num >= 1e6 then
-        return string.format("%.1fM", num / 1e6)
-    elseif num >= 1e3 then
-        return string.format("%.1fK", num / 1e3)
-    else
-        return tostring(num)
-    end
+    num = num or 0
+    if num >= 1e6 then return string.format("%.1fM", num/1e6) end
+    if num >= 1e3 then return string.format("%.1fK", num/1e3) end
+    return math.floor(num)
 end
 
--- Function to Get Class Icon
-local function GetClassIcon(playerName)
-    local _, class = UnitClass(playerName)
-    if class then
-        local texture = "Interface\\Icons\\ClassIcon_" .. class
-        return texture
+-- Get player class
+local function GetPlayerClass(playerName)
+    if UnitIsUnit("player", playerName) then
+        local _, class = UnitClass("player")
+        return class
     end
-    return nil
+    
+    for i = 1, GetNumGroupMembers() do
+        local unit = IsInRaid() and "raid"..i or "party"..i
+        if UnitName(unit) == playerName then
+            local _, class = UnitClass(unit)
+            return class
+        end
+    end
+    return "WARRIOR" -- Default
 end
 
--- UI Update Function
+-- Get spec icon
+local function GetSpecIcon(playerName)
+    for i = 1, GetNumGroupMembers() do
+        local unit = IsInRaid() and "raid"..i or "party"..i
+        if UnitName(unit) == playerName then
+            local specID = GetSpecializationInfo(GetSpecialization(nil, nil, unit))
+            return specID and select(4, GetSpecializationInfoByID(specID)) or "Interface\\Icons\\INV_Misc_QuestionMark"
+        end
+    end
+    if UnitIsUnit("player", playerName) then
+        local specID = GetSpecializationInfo(GetSpecialization())
+        return specID and select(4, GetSpecializationInfoByID(specID)) or "Interface\\Icons\\INV_Misc_QuestionMark"
+    end
+    return "Interface\\Icons\\INV_Misc_QuestionMark"
+end
+
+-- Update UI with dynamic sizing
 local function UpdateDamageUI()
-    -- Clear existing texts before updating
-    if frame.texts then
-        for _, text in ipairs(frame.texts) do
-            text:Hide()
-        end
-    end
-    frame.texts = {}
-
-    local yOffset = -10
+    -- Sort players by damage
+    local sortedPlayers = {}
     for player, damage in pairs(damageData) do
-        -- Create a new container frame for each player
-        local playerFrame = CreateFrame("Frame", nil, frame)
-        playerFrame:SetSize(230, 20)  -- Adjust width to fit the icon and name within the frame
-        playerFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 10, yOffset)  -- Position it within the main frame
+        table.insert(sortedPlayers, { name = player, damage = damage })
+    end
+    table.sort(sortedPlayers, function(a, b) return a.damage > b.damage end)
 
-        -- Create the class icon inside the playerFrame
-        local icon = GetClassIcon(player)
-        if icon then
-            local classIcon = playerFrame:CreateTexture(nil, "ARTWORK")
-            classIcon:SetTexture(icon)
-            classIcon:SetSize(16, 16)  -- Set the size of the icon
-            classIcon:SetPoint("LEFT", playerFrame, "LEFT", 0, 0)  -- Position it to the left of the name
+    -- Calculate needed height
+    local numPlayers = math.max(1, #sortedPlayers) -- At least 1 line
+    local lineHeight = 24
+    local padding = 5
+    local totalHeight = numPlayers * lineHeight + padding * 2
+
+    -- Resize frame
+    frame:SetSize(250, totalHeight)
+
+    -- Create/update player lines
+    for i, playerData in ipairs(sortedPlayers) do
+        local playerName = playerData.name
+        local damage = playerData.damage
+        
+        local playerFrame = playerFrames[playerName] or CreateFrame("Frame", nil, frame, "BackdropTemplate")
+        playerFrame:SetSize(240, lineHeight)
+        playerFrame:SetPoint("TOPLEFT", 5, -padding - (i-1)*lineHeight)
+        
+        -- Class-colored line
+        if not playerFrame.line then
+            playerFrame.line = playerFrame:CreateTexture(nil, "BACKGROUND")
+            playerFrame.line:SetAllPoints()
         end
-
-        -- Create the player's name and damage text
-        local text = playerFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        text:SetPoint("LEFT", playerFrame, "LEFT", 20, 0)  -- Position the text to the right of the icon
-        text:SetText(FormatNumber(damage) .. " " .. player)
-
-        table.insert(frame.texts, text)
-        yOffset = yOffset - 20
+        
+        local class = GetPlayerClass(playerName)
+        local color = CLASS_COLORS[class] or CLASS_COLORS.WARRIOR
+        playerFrame.line:SetColorTexture(color.r, color.g, color.b, 0.7)
+        
+        -- Spec icon
+        if not playerFrame.icon then
+            playerFrame.icon = playerFrame:CreateTexture(nil, "ARTWORK")
+            playerFrame.icon:SetSize(20, 20)
+            playerFrame.icon:SetPoint("LEFT", 5, 0)
+            playerFrame.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+        end
+        playerFrame.icon:SetTexture(GetSpecIcon(playerName))
+        
+        -- Player name
+        if not playerFrame.nameText then
+            playerFrame.nameText = playerFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            playerFrame.nameText:SetPoint("LEFT", 30, 0)
+            playerFrame.nameText:SetTextColor(1, 1, 1, 1)
+            playerFrame.nameText:SetShadowOffset(1, -1)
+        end
+        playerFrame.nameText:SetText(playerName)
+        
+        -- Damage value
+        if not playerFrame.damageText then
+            playerFrame.damageText = playerFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+            playerFrame.damageText:SetPoint("RIGHT", -5, 0)
+            playerFrame.damageText:SetTextColor(1, 1, 1, 1)
+            playerFrame.damageText:SetShadowOffset(1, -1)
+        end
+        playerFrame.damageText:SetText(FormatNumber(damage))
+        
+        playerFrame:Show()
+        playerFrames[playerName] = playerFrame
     end
 end
 
--- Event Handling
+-- Combat events
 frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 frame:RegisterEvent("PLAYER_REGEN_DISABLED")
-frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-
-frame:SetScript("OnEvent", function(self, event)
+frame:RegisterEvent("GROUP_ROSTER_UPDATE")
+frame:SetScript("OnEvent", function(_, event, ...)
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        local _, subEvent, _, sourceGUID, sourceName, _, _, _, _, _, _, _, _, _, amount = CombatLogGetCurrentEventInfo()
-        if (subEvent == "SPELL_DAMAGE" or subEvent == "RANGE_DAMAGE" or subEvent == "SWING_DAMAGE") then
-            if sourceName and (sourceName == UnitName("player") or IsPlayerInGroup(sourceName)) then
-                damageData[sourceName] = (damageData[sourceName] or 0) + (amount or 0)
+        local _, subEvent, _, _, sourceName = CombatLogGetCurrentEventInfo()
+        if (subEvent == "SPELL_DAMAGE" or subEvent == "SWING_DAMAGE" or 
+            subEvent == "RANGE_DAMAGE" or subEvent == "SPELL_PERIODIC_DAMAGE") then
+            if sourceName and (UnitIsUnit("player", sourceName) or IsInGroup()) then
+                local amount = select(15, CombatLogGetCurrentEventInfo()) or 0
+                damageData[sourceName] = (damageData[sourceName] or 0) + amount
                 UpdateDamageUI()
             end
         end
     elseif event == "PLAYER_REGEN_DISABLED" then
-        damageData = {}  -- Reset on fight start
+        wipe(damageData)
         UpdateDamageUI()
-    elseif event == "PLAYER_REGEN_ENABLED" then
-        -- No chat print now, just update UI
+    elseif event == "GROUP_ROSTER_UPDATE" then
         UpdateDamageUI()
     end
 end)
 
--- Create the round button attached to the mini-map (Toggle Button)
-local toggleButton = CreateFrame("Button", "SimpleDamageMeterToggleButton", UIParent, "BackdropTemplate")
-toggleButton:SetSize(30, 30)  -- Set the size of the button
-toggleButton:SetNormalTexture("Interface\\Icons\\INV_Misc_QuestionMark")  -- Set the icon
+-- Toggle button with icon instead of text
+local toggleBtn = CreateFrame("Button", nil, UIParent, "UIPanelButtonTemplate")
+toggleBtn:SetSize(36, 36)  -- Set button size (adjust as needed)
+toggleBtn:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -5, -5)  -- Position around the minimap
 
--- Add a golden border to the button (mimicking mini-map style)
-toggleButton:SetBackdrop({
-    bgFile = "Interface\\Buttons\\White8x8", 
-    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", 
-    edgeSize = 12,
-    insets = { left = 2, right = 2, top = 2, bottom = 2 }
-})
-toggleButton:SetBackdropColor(0, 0, 0, 0.8)
-toggleButton:SetBackdropBorderColor(1, 0.84, 0, 1)  -- Golden color for the border
+-- Set an icon for the button (use a valid path for the icon)
+toggleBtn:SetNormalTexture("Interface\\Icons\\Ability_Warrior_Charge")  -- Replace with a valid icon path
+toggleBtn:SetPushedTexture("Interface\\Icons\\Ability_Warrior_Charge")  -- Optional, set for the pressed state
 
--- Function to position the icon on the edge of the mini-map
-local function PositionButton()
-    local minimapRadius = Minimap:GetWidth() / 2
-    local angle = math.random() * 2 * math.pi  -- Random angle to start with
-    local xOffset = minimapRadius * math.cos(angle)
-    local yOffset = minimapRadius * math.sin(angle)
-
-    toggleButton:SetPoint("CENTER", Minimap, "CENTER", xOffset, yOffset)
-end
-
-PositionButton()
-
--- Make the button **non-movable** and **clickable** (to toggle the frame visibility)
-toggleButton:SetMovable(false)
-toggleButton:EnableMouse(true)
-toggleButton:SetScript("OnClick", function()
-    if frame:IsShown() then
-        frame:Hide()
-    else
-        frame:Show()
-    end
+toggleBtn:SetScript("OnClick", function() 
+    frame:SetShown(not frame:IsShown())
 end)
 
-toggleButton:Show()
-
--- Allow dragging the frame (damage meter)
-frame:SetMovable(true)
-frame:EnableMouse(true)
-frame:SetScript("OnMouseDown", function(self, button)
-    if button == "LeftButton" then
-        self:StartMoving()
-    end
-end)
-
-frame:SetScript("OnMouseUp", function(self)
-    self:StopMovingOrSizing()
-end)
-
-SLASH_SIMPLEDMG1 = "/damage"
+-- Slash command
+SLASH_SIMPLEDMG1 = "/dm"
 SlashCmdList["SIMPLEDMG"] = function(msg)
     if msg == "reset" then
-        damageData = {}
+        wipe(damageData)
         UpdateDamageUI()
-        print("Damage reset!")
     else
-        UpdateDamageUI()
+        frame:SetShown(not frame:IsShown())
     end
-end 
+end
+
+-- Initial setup
+frame:SetPoint("CENTER")
+UpdateDamageUI()
